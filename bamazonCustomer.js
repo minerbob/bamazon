@@ -59,23 +59,24 @@ function start() {
             // when finished prompting, insert a new item into the db with that info
             connection.query(query, { item_id: answer.item }, function (err, res) {
                 if (err) throw err;
-                for (var i = 0; i < res.length; i++) {
-                    if (res[i].stock_quantity >= answer.amount) {
+                var passUp = res[0];
+
+                    if (res[0].stock_quantity >= answer.amount) {
 
                         var query = connection.query(
                            
                             "UPDATE products SET ? WHERE ?",
                             [
                                 {
-                                    stock_quantity: res[i].stock_quantity - answer.amount
+                                    stock_quantity: res[0].stock_quantity - answer.amount
                                 },
                                 {
-                                    item_id: res[i].item_id
+                                    item_id: answer.item
                                 }
                             ],
                             function (err, res) {
                                 if (err) throw err;
-                                console.log("You purchased the goods \n");
+                                console.log("You purchased the goods for $" + (passUp.price * answer.item) +  "\n");
                                 display();
 
                             }
@@ -87,7 +88,7 @@ function start() {
                         console.log("Not enough Product To buy \n")
                         display();
                     }
-                }
+                
 
             });
         });
